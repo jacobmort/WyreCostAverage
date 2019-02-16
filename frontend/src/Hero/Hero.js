@@ -1,18 +1,34 @@
 import React, { Component } from 'react';
 import './Hero.css';
+import OnBoard from '../OnBoard/OnBoard';
 import arrow from "./arrow.png";
 import tachart from "./ta-chart.png";
-class Hero extends Component {
 
+// configure the widget to authenticate using the generated key
+class Hero extends Component {
+  state = {
+    onBoardFlow: false
+  }
+
+  handleOpen = () => {
+    this.setState({
+      onBoardFlow: true
+    })
+  };
 
   render() {
+    let onBoardDialog;
+    if (this.state.onBoardFlow) {
+      onBoardDialog = <OnBoard />;
+    }
+
     return (
       <div className="section hero">
         <div className="container">
           <div className="row">
             <div className="one-half column">
               <h4 className="hero-heading">Stop trying to buy the dip</h4>
-              <a className="button button-primary" href="http://getskeleton.com">Dollar Cost Average That Shiz</a>
+              <span className="button button-primary" onClick={this.handleOpen}>Dollar Cost Average That Shiz</span>
               <div className="noeone">
                 <div className="row">
                   <div className="eight columns">&nbsp;</div>
@@ -29,9 +45,9 @@ class Hero extends Component {
             </div>
           </div>
         </div>
+        {onBoardDialog}
       </div>
     );
   }
 }
-
 export default Hero;

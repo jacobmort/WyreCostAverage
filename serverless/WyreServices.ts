@@ -8,10 +8,22 @@ export class WyreServices {
   axios;
   constructor() {
   }
-  getAccount(accountId: string): Promise<AxiosResponse> {
-    const endPoint = `/v3/accounts/${accountId}`;
-    const url = this.generateUrl(endPoint);
+  getAccount(mainAccount: string, subAccountId: string): Promise<AxiosResponse> {
+    const endPoint = `/v3/accounts/${mainAccount}`;
+    const url = this.generateUrl(endPoint, subAccountId);
     return this.getRequest(url);
+  }
+
+  createAccount(country: string, accountId: string): Promise<AxiosResponse> {
+    const endPoint = `https://api.sendwyre.com/v3/accounts`;
+    const url = this.generateUrl(accountId, null);
+    const params = {
+      type: 'INDIVIDUAL',
+      country: country,
+      profileFields: [],
+      referrerAccountId: accountId
+    }
+    return this.postRequest(url, params);
   }
 
   createTransfer(srn: string,
@@ -21,7 +33,7 @@ export class WyreServices {
     destCurrencySymbol: string,
     message: string) {
     const endPoint = `/v3/transfers`;
-    const url = this.generateUrl(endPoint);
+    const url = this.generateUrl(endPoint, null);
     const signed = this.signMessage(url, " ");
     const params = {
       // "source": "account:AC-WYUR7ZZ6UMU",
@@ -46,12 +58,19 @@ export class WyreServices {
 
   timestampUrl(url: string): string {
     // Additionally, you should include a GET parameter named timestamp which is the current time in millisecond epoch format. We use this timestamp to help protect against replay attacks.
-    return `${url}?timestamp=${(new Date).getTime()}`;
+    let token = '?';
+    if (url.indexOf('?') !== -1) {
+      token = '&';
+    }
+    return `${url}${token}timestamp=${(new Date).getTime()}`;
   }
 
-  generateUrl(restEndpoint: string): string {
+  generateUrl(restEndpoint: string, masqueradeAccountId: string): string {
     const baseURL = 'https://api.testwyre.com';
-    const url = `${baseURL}${restEndpoint}`;
+    let url = `${baseURL}${restEndpoint}`;
+    if (masqueradeAccountId !== null) {
+      url += `?masqueradeAs=${masqueradeAccountId}`;
+    }
     // TODO it seems like timestamp isn't included in the URL which is hashed but I can't get it to work either way
     return this.timestampUrl(url);
   }
