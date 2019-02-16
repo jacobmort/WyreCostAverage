@@ -1,0 +1,21 @@
+/* Hero
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.charts {
+  position: relative;
+}
+.chart {
+  position: relative;
+  max-width: 125%;
+  margin: 3rem auto -12rem;
+}
+.chart + .chart {
+  display: none;
+}
+
+.noeone{
+  padding-top: 7em;
+}
+
+.arrow {
+  transform: rotate(180deg);
+}
