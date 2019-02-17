@@ -1,30 +1,49 @@
 import React from 'react';
+import axios from 'axios';
 import { WyreContext } from '../WyreContext';
+import WyrePmWidget from '../WyreLibs/pm-widget-init';
 import ChooseDirection from './ChooseDirection';
 import ChooseCurrency from './ChooseCurrency';
+import CreateAccount from './CreateAccount';
+import Explanation from './Explanation';
 import './OnBoard.css';
-import WyrePmWidget from '../WyreLibs/pm-widget-init';
+
+const endpoint = "https://xji34ppszd.execute-api.us-east-1.amazonaws.com/dev";
 
 class OnBoard extends React.Component {
-  state = {
-    currentStep: 3,
-    wyreType: null,
-    wyreDestCurrency: null,
-    wyreDestAddress: null
-  };
-
-  handleBuy = () => {
-    this.setState({
+  constructor() {
+    super();
+    this.state = {
       currentStep: 1,
-      wyreType: 'none'
-    });
-  };
+      accountId: null
+    }
+  }
 
-  handleSell = () => {
+  componentDidMount() {
     this.setState({
-      currentStep: 2,
-      wyreType: 'none'
+      credentials: this.context,
     });
+  }
+
+  advance = () => {
+    this.setState((prevState, props) => {
+      return {
+        currentStep: prevState.currentStep + 1
+      }
+    })
+  }
+
+  createAccount = (state) => {
+    axios.post(`${endpoint}/account`, state)
+      .then(result => {
+        console.log(result);
+        this.setState((prevState, props) => {
+          return {
+            accountId: result.accountId,
+            currentStep: prevState.currentStep + 1
+          }
+        })
+      })
   }
 
   handleCurrencyChoice = (symbol, address) => {
@@ -55,20 +74,20 @@ class OnBoard extends React.Component {
     });
   }
 
-  componentDidMount() {
-    this.setState({ credentials: this.context });
-    this.connectBank();
-  }
-
   render() {
     const { onClose, ...other } = this.props;
     let currentDialog;
     if (this.state.currentStep === 0) {
-      currentDialog = <ChooseDirection handleBuy={this.handleBuy} handleSell={this.handleSell} />;
+      currentDialog = <Explanation continueClick={this.advance} />;
     } else if (this.state.currentStep === 1) {
-      currentDialog = <ChooseCurrency handleChoice={this.handleCurrencyChoice} />;
+      currentDialog = <CreateAccount continueClick={this.createAccount} />;
+    } else if (this.state.currentStep === 2) {
+      // upload docs
+    } else if (this.state.currentStep === 3) {
+      // link ACH with plaid
+    } else if (this.state.currentStep === 4) {
+      // Buy or sell?
     }
-
     return (
       <div>
         {currentDialog}

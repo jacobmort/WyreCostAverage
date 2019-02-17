@@ -8,33 +8,29 @@ import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import './OnBoard.css';
 
-class ChooseDirection extends React.Component {
+class Explanation extends React.Component {
   render() {
-    const { handleBuy, handleSell, ...other } = this.props;
+    const { continueClick, ...other } = this.props;
     let open = true;
-    let fullWidth = true;
     return (
-      <Dialog open={open} fullWidth={fullWidth}>
-        <DialogTitle id="form-dialog-title">Buy or sell?</DialogTitle>
+      <Dialog open={open}>
+        <DialogTitle id="form-dialog-title">Sign up With Wyre</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Do you want to buy or sell crypto assets?
+            <a href="https://www.sendwyre.com/">Wyre</a> is great for getting into/out of crypto. <br />
+            Let's get started
             </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleBuy} color="primary">
-            Buy
-            </Button>
-          <Button onClick={handleSell} color="primary">
-            Sell
+          <Button onClick={continueClick} color="primary">
+            Continue
             </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog >
     );
   }
 }
-ChooseDirection.propTypes = {
-  handleBuy: PropTypes.func,
-  handleSell: PropTypes.func
+Explanation.propTypes = {
+  continueClick: PropTypes.func,
 };
-export default ChooseDirection;
+export default Explanation;
