@@ -48,7 +48,7 @@ class ChooseCurrency extends React.Component {
 
   changeAutoDeposit = (evt) => {
     this.setState({
-      autoDeposit: evt.target.value
+      autoDeposit: evt.target.checked
     })
   }
 
@@ -75,7 +75,7 @@ class ChooseCurrency extends React.Component {
   }
 
   render() {
-    const { buyClick, sellClick, ...other } = this.props;
+    const { transferClick, ...other } = this.props;
     let open = true;
     return (
       <Dialog open={open}>
@@ -129,7 +129,7 @@ class ChooseCurrency extends React.Component {
           {this.showTheAdditionalOptions()}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => buyClick(this.state)} color="primary">
+          <Button onClick={() => transferClick(this.state)} color="primary">
             Make the First Trade and Schedule Rest
             </Button>
         </DialogActions>

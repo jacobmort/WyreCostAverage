@@ -104,8 +104,31 @@ class OnBoard extends React.Component {
       });
   }
 
-  transfer() {
+  transfer(state) {
+    let params = {
+      sourceAmount: state.num,
+      message: "test"
+    }
+    if (state.side === 'buy') {
+      params.srn = this.state.achAddress;
+      params.sourceCurrencySymbol = 'USD';
+      params.destSrn = state.chosenCurrency === 'BTC' ? this.state.btcAddress : this.state.userEthAddress;
+      params.destCurrencySymbol = state.chosenCurrency;
+    } else {
+      params.sourceCurrencySymbol = state.chosenCurrency;
+      params.srn = state.chosenCurrency === 'BTC' ? this.state.btcAddress : this.state.userEthAddress;
+      params.destSrn = this.state.achAddress;
+      params.destCurrencySymbol = "USD";
+    }
 
+    axios.post(`${endpoint}/account/${this.state.accountId}/transfer`, params)
+      .then((result) => {
+        this.setState((prevState, props) => {
+          return {
+            currentStep: prevState.currentStep + 1
+          }
+        })
+      });
   }
 
   render() {
@@ -120,7 +143,7 @@ class OnBoard extends React.Component {
     } else if (this.state.currentStep === 3) {
       this.connectBank().then((payToken) => this.saveBank(payToken));
     } else if (this.state.currentStep === 4) {
-      currentDialog = <ChooseCurrency transferClick={this.transfer} />
+      currentDialog = <ChooseCurrency transferClick={this.transfer.bind(this)} />
     }
     return (
       <div>
