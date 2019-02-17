@@ -1,34 +1,30 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { WyreServices } from './WyreServices';
 
-// const ACCOUNT_ID = 'AC_8XBAYGXRE4R';
-// const SUB_ACCOUNT_ID = 'AC_7G3GT3CDH9V';
-const PAYMENT_ID = 'PA_42VJMPZH7UZ';
-
 export const handler = async (event, context, callback) => {
-  //return await call("getAccount", [SUB_ACCOUNT_ID, true]);
-  // return call("getPaymentMethod", ['PA_42VJMPZH7UZ', SUB_ACCOUNT_ID, true]);
-  // return await call("transfer", [
-  //   "paymentmethod:PA_42VJMPZH7UZ",
-  //   "USD",
-  //   "10.0",
-  //   `account:${SUB_ACCOUNT_ID}`,
-  //   "USD",
-  //   "test"]);
-
   let httpMethod = event["httpMethod"];
   let path = event["path"];
   let accountId;
+  let response;
   if ('accountId' in event.pathParameters) {
     accountId = event.pathParameters.accountId;
   }
-  let response;
   if (httpMethod === 'POST') {
-    if (path.indexof('document') !== -1) {
+    if (path.indexOf('document') !== -1) {
       response = await call("uploadDocument", [accountId, event['body'], true]);
     } else if (path.indexOf('payment') !== -1) {
       const paymentId = event.pathParameters.id;
       response = await call("addPaymentMethod", [accountId, paymentId, true]);
+    } else if (path.indexOf("transfer") !== -1) {
+      response = await call("transfer", [
+        accountId,
+        event['body']['srn'],
+        event['body']['sourceCurrencySymbol'],
+        event['body']['sourceAmt'],
+        event['body']['destSrn'],
+        event['body']['destCurrencySymbol'],
+        event['body']['message'],
+        true])
     } else {
       response = await call("create", [
         event['body']['accountId'],
@@ -46,7 +42,15 @@ export const handler = async (event, context, callback) => {
       ]);
     }
   } else {
-    response = await call("getAccount", [accountId, true]);
+    if (path.indexOf("payment") !== -1) {
+      const paymentId = event.pathParameters.id;
+      response = await call("getPaymentMethod", [accountId, paymentId, true]);
+    } else if (path.indexOf('transfer') !== -1) {
+      const transferId = event.pathParameters.id;
+      response = await call('transferStatus', [accountId, transferId, true]);
+    } else {
+      response = await call("getAccount", [accountId, true]);
+    }
   }
   callback(null, response);
 }

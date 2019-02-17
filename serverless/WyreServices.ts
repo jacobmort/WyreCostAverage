@@ -65,14 +65,16 @@ export class WyreServices {
     return this.postRequest(url, params);
   }
 
-  createTransfer(srn: string,
+  transfer(
+    accountId: string,
+    srn: string,
     sourceCurrencySymbol: string,
     sourceAmt: string,
     destSrn: string,
     destCurrencySymbol: string,
     message: string) {
     const endPoint = `/v3/transfers`;
-    const url = this.generateUrl(endPoint, null);
+    const url = this.generateUrl(endPoint, accountId);
     const params = {
       // "source": "account:AC-WYUR7ZZ6UMU",
       // "sourceCurrency": "USD",
@@ -91,6 +93,13 @@ export class WyreServices {
       "autoConfirm": true
     }
     return this.postRequest(url, params);
+  }
+
+  transferStatus(accountId: string, transferId: string, masquerade: boolean) {
+    const endPoint = `/v3/transfers/${transferId}`;
+    let masqueradeId = masquerade ? accountId : null;
+    const url = this.generateUrl(endPoint, masqueradeId);
+    return this.getRequest(url);
   }
 
   uploadDocument(accountId: string, document: Object, masquerade: boolean) {
@@ -115,7 +124,7 @@ export class WyreServices {
     return this.postRequest(url, params);
   }
 
-  getPaymentMethod(paymentId: string, accountId: string, masquerade: boolean) {
+  getPaymentMethod(accountId: string, paymentId: string, masquerade: boolean) {
     const endPoint = `/v2/paymentMethod/${paymentId}`;
     let masqueradeId = masquerade ? accountId : null;
     const url = this.generateUrl(endPoint, masqueradeId);

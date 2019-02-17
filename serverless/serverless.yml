@@ -22,6 +22,15 @@ functions:
               paths:
                 accountId: true
       - http:
+          method: get
+          path: account/{accountId}/payment/{id}
+          cors: true
+          request:
+            parameters:
+              paths:
+                accountId: true
+                id: true
+      - http:
           method: post
           path: account
           cors: true
@@ -41,4 +50,21 @@ functions:
               paths:
                 accountId: true
                 id: true
+      - http:
+          method: post
+          path: account/{accountId}/transfer
+          cors: true
+          request:
+            parameters:
+            paths:
+              accountId: true
+      - http:
+          method: get
+          path: account/{accountId}/transfer/{id}
+          cors: true
+          request:
+            parameters:
+            paths:
+              accountId: true
+              id: true        
         
