@@ -106,7 +106,7 @@ class OnBoard extends React.Component {
 
   transfer(state) {
     let params = {
-      sourceAmount: state.num,
+      sourceAmt: state.num,
       message: "test"
     }
     if (state.side === 'buy') {
