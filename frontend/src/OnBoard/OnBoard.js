@@ -2,8 +2,8 @@ import React from 'react';
 import { WyreContext } from '../WyreContext';
 import ChooseDirection from './ChooseDirection';
 import ChooseCurrency from './ChooseCurrency';
-import blue from '@material-ui/core/colors/blue';
 import './OnBoard.css';
+import WyrePmWidget from '../WyreLibs/pm-widget-init';
 
 class OnBoard extends React.Component {
   state = {
@@ -34,8 +34,30 @@ class OnBoard extends React.Component {
     });
   }
 
+  connectBank() {
+    return new Promise((resolve, reject) => {
+      const handler = new WyrePmWidget({
+        env: "test",
+        onLoad: function () {
+          // In this example we open the modal immediately on load. More typically you might have the handler.open() invocation attached to a button.
+          handler.open();
+        },
+        onSuccess: function (result) {
+          // Here you would forward the publicToken back to your server in order to  be shipped to the Wyre API
+          console.log(result.publicToken);
+          resolve(result.publicToken);
+        },
+        onExit: function (err) {
+          console.log("Thingo exited:", err);
+          reject(err);
+        }
+      });
+    });
+  }
+
   componentDidMount() {
     this.setState({ credentials: this.context });
+    this.connectBank();
   }
 
   render() {
