@@ -103,12 +103,14 @@ export class WyreServices {
   }
 
   uploadDocument(accountId: string, document: Object, masquerade: boolean) {
-    const endPoint = `/v3/accounts/${accountId}/DOCUMENT`;
+    const jpeg = "data:image/jpeg;base64,/9j/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k=";
+    let buffer = new Buffer("/9j/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k=", 'base64');
+    const endPoint = `/v3/accounts/${accountId}/individualGovernmentId`;
     let masqueradeId = masquerade ? accountId : null;
     const url = this.generateUrl(endPoint, masqueradeId);
-    const signed = this.signMessage(url, JSON.stringify(document));
+    const signed = this.signMessage(url, buffer.toString('utf8'));
     const headers = this.getHeaders(signed);
-    headers['Content-Type'] = 'image/jpeg';
+    headers.headers['Content-Type'] = 'image/jpeg';
     return this.postRequestWithHeaders(url, signed, headers);
   }
 

@@ -11,13 +11,13 @@ export const handler = async (event, context, callback) => {
     accountId = event.pathParameters.accountId;
   }
   if (httpMethod === 'POST') {
-    let payload = JSON.parse(event.body);
     if (path.indexOf('document') !== -1) {
-      response = await call("uploadDocument", [accountId, payload, true]);
+      response = await call("uploadDocument", [accountId, event.body, true]);
     } else if (path.indexOf('payment') !== -1) {
       const paymentId = event.pathParameters.id;
       response = await call("addPaymentMethod", [accountId, paymentId, true]);
     } else if (path.indexOf("transfer") !== -1) {
+      let payload = JSON.parse(event.body);
       response = await call("transfer", [
         accountId,
         payload.srn,
@@ -28,6 +28,7 @@ export const handler = async (event, context, callback) => {
         payload.message,
         true])
     } else {
+      let payload = JSON.parse(event.body);
       response = await call("createAccount", [
         OUR_ACCOUNT_ID,
         payload.country,

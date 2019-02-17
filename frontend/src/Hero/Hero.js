@@ -28,7 +28,7 @@ class Hero extends Component {
           <div className="row">
             <div className="one-half column">
               <h4 className="hero-heading">Stop trying to buy the dip</h4>
-              <span className="button button-primary" onClick={this.handleOpen}>Dollar Cost Average That Shiz</span>
+              <span className="button button-primary" onClick={this.handleOpen}>Dollar Cost Average Your Trades</span>
               <div className="noeone">
                 <div className="row">
                   <div className="eight columns">&nbsp;</div>

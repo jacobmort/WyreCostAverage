@@ -18,7 +18,7 @@ class Explanation extends React.Component {
         <DialogContent>
           <DialogContentText>
             <a href="https://www.sendwyre.com/">Wyre</a> is great for getting into/out of crypto. <br />
-            Let's get started
+            Let's get started.  Crypto isn't easy but this process is only 5 steps!
             </DialogContentText>
         </DialogContent>
         <DialogActions>

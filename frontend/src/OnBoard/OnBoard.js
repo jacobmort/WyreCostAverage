@@ -2,10 +2,10 @@ import React from 'react';
 import axios from 'axios';
 import { WyreContext } from '../WyreContext';
 import WyrePmWidget from '../WyreLibs/pm-widget-init';
-import ChooseDirection from './ChooseDirection';
 import ChooseCurrency from './ChooseCurrency';
 import CreateAccount from './CreateAccount';
 import Explanation from './Explanation';
+import UploadDocs from './UploadDocs';
 import './OnBoard.css';
 
 const endpoint = "https://xji34ppszd.execute-api.us-east-1.amazonaws.com/dev";
@@ -14,8 +14,11 @@ class OnBoard extends React.Component {
   constructor() {
     super();
     this.state = {
-      currentStep: 1,
-      accountId: null
+      currentStep: 4,
+      accountId: 'AC_PYMPB8R73EE',
+      ethAddress: null,
+      btcAddress: null,
+      achAddress: null
     }
   }
 
@@ -46,6 +49,21 @@ class OnBoard extends React.Component {
       })
   }
 
+  uploadDocs = (file) => {
+    // const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+    const config = { headers: { 'Content-Type': 'image/jpeg' } };
+    // let fd = new FormData();
+    // fd.append('file', file[0])
+    axios.post(`${endpoint}/account/${this.state.accountId}/document`, file, config)
+      .then((result) => {
+        this.setState((prevState, props) => {
+          return {
+            currentStep: prevState.currentStep + 1
+          }
+        })
+      });
+  }
+
   handleCurrencyChoice = (symbol, address) => {
     this.setState({
       wyreDestCurrency: symbol,
@@ -74,6 +92,22 @@ class OnBoard extends React.Component {
     });
   }
 
+  saveBank(paytoken) {
+    axios.post(`${endpoint}/account/${this.state.accountId}/payment/${paytoken}`)
+      .then((result) => {
+        this.setState((prevState, props) => {
+          return {
+            achBank: result.id,
+            currentStep: prevState.currentStep + 1
+          }
+        })
+      });
+  }
+
+  transfer() {
+
+  }
+
   render() {
     const { onClose, ...other } = this.props;
     let currentDialog;
@@ -82,11 +116,11 @@ class OnBoard extends React.Component {
     } else if (this.state.currentStep === 1) {
       currentDialog = <CreateAccount continueClick={this.createAccount} />;
     } else if (this.state.currentStep === 2) {
-      // upload docs
+      currentDialog = <UploadDocs continueClick={this.uploadDocs} />;
     } else if (this.state.currentStep === 3) {
-      // link ACH with plaid
+      this.connectBank().then((payToken) => this.saveBank(payToken));
     } else if (this.state.currentStep === 4) {
-      // Buy or sell?
+      currentDialog = <ChooseCurrency transferClick={this.transfer} />
     }
     return (
       <div>

@@ -39,7 +39,7 @@ class CreateAccount extends React.Component {
         onClose={this.handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Let's Create a Wyre Account</DialogTitle>
+        <DialogTitle id="form-dialog-title">1. Let's Create a Wyre Account</DialogTitle>
         <DialogContent>
           <Grid container spacing={24}>
             <TextField
