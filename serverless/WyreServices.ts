@@ -14,14 +14,43 @@ export class WyreServices {
     return this.getRequest(url);
   }
 
-  createAccount(country: string, accountId: string): Promise<AxiosResponse> {
-    const endPoint = `https://api.sendwyre.com/v3/accounts`;
-    const url = this.generateUrl(accountId, null);
+  createAccount(
+    parentAccountId: string,
+    country: string,
+    fullName: string,
+    email: string,
+    street1: string,
+    street2: string,
+    city: string,
+    state: string,
+    postalCode: string): Promise<AxiosResponse> {
+    const endPoint = `/v3/accounts`;
+    const url = this.generateUrl(endPoint, null);
     const params = {
       type: 'INDIVIDUAL',
       country: country,
-      profileFields: [],
-      referrerAccountId: accountId
+      profileFields: [
+        {
+          "fieldId": "individualLegalName",
+          "value": fullName
+        },
+        {
+          "fieldId": "individualEmail",
+          "value": email
+        },
+        {
+          "fieldId": "individualResidenceAddress",
+          "value": {
+            "street1": street1,
+            "street2": street2,
+            "city": city,
+            "state": state,
+            "postalCode": postalCode,
+            "country": country
+          }
+        }
+      ],
+      referrerAccountId: parentAccountId
     }
     return this.postRequest(url, params);
   }
@@ -87,7 +116,7 @@ export class WyreServices {
   }
 
   postRequest(url: string, params: Object): Promise<AxiosResponse> {
-    const signed = this.signMessage(url, "");
+    const signed = this.signMessage(url, JSON.stringify(params));
     return new Promise((resolve, reject) => {
       axios.post(url, params, this.getHeaders(signed)).then((result) => {
         resolve(result);
