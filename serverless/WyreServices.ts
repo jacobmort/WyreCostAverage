@@ -8,9 +8,10 @@ export class WyreServices {
   axios;
   constructor() {
   }
-  getAccount(mainAccount: string, subAccountId: string): Promise<AxiosResponse> {
+  getAccount(mainAccount: string, masquerade: boolean): Promise<AxiosResponse> {
     const endPoint = `/v3/accounts/${mainAccount}`;
-    const url = this.generateUrl(endPoint, subAccountId);
+    let masqueradeId = masquerade ? mainAccount : null;
+    const url = this.generateUrl(endPoint, masqueradeId);
     return this.getRequest(url);
   }
 
@@ -23,7 +24,9 @@ export class WyreServices {
     street2: string,
     city: string,
     state: string,
-    postalCode: string): Promise<AxiosResponse> {
+    postalCode: string,
+    ssn: string,
+    dob: Date): Promise<AxiosResponse> {
     const endPoint = `/v3/accounts`;
     const url = this.generateUrl(endPoint, null);
     const params = {
@@ -46,7 +49,9 @@ export class WyreServices {
             "city": city,
             "state": state,
             "postalCode": postalCode,
-            "country": country
+            "country": country,
+            "individualSsn": ssn,
+            "individualDateOfBirth": dob
           }
         }
       ],
@@ -63,7 +68,6 @@ export class WyreServices {
     message: string) {
     const endPoint = `/v3/transfers`;
     const url = this.generateUrl(endPoint, null);
-    const signed = this.signMessage(url, " ");
     const params = {
       // "source": "account:AC-WYUR7ZZ6UMU",
       // "sourceCurrency": "USD",
@@ -85,6 +89,16 @@ export class WyreServices {
     return this.postRequest(url, params);
   }
 
+  uploadDocument(accountId: string, document: Object, masquerade: boolean) {
+    const endPoint = `/v3/accounts/${accountId}/DOCUMENT`;
+    let masqueradeId = masquerade ? accountId : null;
+    const url = this.generateUrl(endPoint, masqueradeId);
+    const signed = this.signMessage(url, JSON.stringify(document));
+    const headers = this.getHeaders(signed);
+    headers['Content-Type'] = 'image/jpeg';
+    return this.postRequestWithHeaders(url, signed, headers);
+  }
+
   timestampUrl(url: string): string {
     // Additionally, you should include a GET parameter named timestamp which is the current time in millisecond epoch format. We use this timestamp to help protect against replay attacks.
     let token = '?';
@@ -94,11 +108,11 @@ export class WyreServices {
     return `${url}${token}timestamp=${(new Date).getTime()}`;
   }
 
-  generateUrl(restEndpoint: string, masqueradeAccountId: string): string {
+  generateUrl(restEndpoint: string, masqueradeId: string): string {
     const baseURL = 'https://api.testwyre.com';
     let url = `${baseURL}${restEndpoint}`;
-    if (masqueradeAccountId !== null) {
-      url += `?masqueradeAs=${masqueradeAccountId}`;
+    if (masqueradeId !== null) {
+      url += `?masqueradeAs=${masqueradeId}`;
     }
     // TODO it seems like timestamp isn't included in the URL which is hashed but I can't get it to work either way
     return this.timestampUrl(url);
@@ -117,8 +131,13 @@ export class WyreServices {
 
   postRequest(url: string, params: Object): Promise<AxiosResponse> {
     const signed = this.signMessage(url, JSON.stringify(params));
+    const headers = this.getHeaders(signed);
+    return this.postRequestWithHeaders(url, params, headers);
+  }
+
+  postRequestWithHeaders(url: string, params: Object, headers: Object): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
-      axios.post(url, params, this.getHeaders(signed)).then((result) => {
+      axios.post(url, params, headers).then((result) => {
         resolve(result);
       }).catch((e) => {
         reject(e);
