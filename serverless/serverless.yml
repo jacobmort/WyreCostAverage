@@ -15,14 +15,30 @@ functions:
     events:
       - http:
           method: get
-          path: account
+          path: account/{accountId}
           cors: true
+          request:
+            parameters:
+              paths:
+                accountId: true
       - http:
           method: post
           path: account
           cors: true
       - http:
           method: post
-          path: account/document
+          path: account/{accountId}/document
           cors: true
+          parameters:
+              paths:
+                accountId: true
+      - http:
+          method: post
+          path: account/{accountId}/payment/{id}
+          cors: true
+          request:
+            parameters:
+              paths:
+                accountId: true
+                id: true
         

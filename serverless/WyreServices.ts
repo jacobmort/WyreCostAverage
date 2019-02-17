@@ -20,6 +20,7 @@ export class WyreServices {
     country: string,
     fullName: string,
     email: string,
+    cellPhone: string,
     street1: string,
     street2: string,
     city: string,
@@ -40,6 +41,10 @@ export class WyreServices {
         {
           "fieldId": "individualEmail",
           "value": email
+        },
+        {
+          "fieldId": "individualCellphoneNumber",
+          "value": cellPhone
         },
         {
           "fieldId": "individualResidenceAddress",
@@ -84,7 +89,6 @@ export class WyreServices {
       "destCurrency": destCurrencySymbol,
       "message": message,
       "autoConfirm": true
-
     }
     return this.postRequest(url, params);
   }
@@ -97,6 +101,25 @@ export class WyreServices {
     const headers = this.getHeaders(signed);
     headers['Content-Type'] = 'image/jpeg';
     return this.postRequestWithHeaders(url, signed, headers);
+  }
+
+  addPaymentMethod(accountId: string, paytoken: string, masquerade: boolean) {
+    const endPoint = `/v2/paymentMethods`;
+    let masqueradeId = masquerade ? accountId : null;
+    const url = this.generateUrl(endPoint, masqueradeId);
+    const params = {
+      publicToken: paytoken,
+      paymentMethodType: "LOCAL_TRANSFER",
+      country: 'US'
+    }
+    return this.postRequest(url, params);
+  }
+
+  getPaymentMethod(paymentId: string, accountId: string, masquerade: boolean) {
+    const endPoint = `/v2/paymentMethod/${paymentId}`;
+    let masqueradeId = masquerade ? accountId : null;
+    const url = this.generateUrl(endPoint, masqueradeId);
+    return this.getRequest(url);
   }
 
   timestampUrl(url: string): string {
