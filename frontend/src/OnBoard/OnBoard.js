@@ -41,6 +41,7 @@ class OnBoard extends React.Component {
       .then(result => {
         console.log(result);
         this.setState((prevState, props) => {
+          console.log(result.accountId);
           return {
             accountId: result.accountId,
             currentStep: prevState.currentStep + 1
@@ -105,8 +106,9 @@ class OnBoard extends React.Component {
   }
 
   transfer(state) {
+    const amountPerTransAndNumToDo = this.calculateFutureTransfers(state.num, state.endDate);;
     let params = {
-      sourceAmt: state.num,
+      sourceAmt: amountPerTransAndNumToDo[0],
       message: "test"
     }
     if (state.side === 'buy') {
@@ -123,12 +125,28 @@ class OnBoard extends React.Component {
 
     axios.post(`${endpoint}/account/${this.state.accountId}/transfer`, params)
       .then((result) => {
+        console.log(result);
+        if (amountPerTransAndNumToDo-- > 0) {
+          {
+            // TODO post remaining to CRON endpoint
+          }
+        }
         this.setState((prevState, props) => {
           return {
             currentStep: prevState.currentStep + 1
           }
         })
       });
+  }
+
+  calculateFutureTransfers(amount, endDate) {
+    const today = new Date();
+    endDate = new Date(endDate);
+    const one_day = 1000 * 60 * 60 * 24;
+    const days = Math.ceil((endDate.getTime() - today.getTime()) / (one_day));
+    const numOfTransactions = Math.ceil(days / 7); // 1x per week
+    const amountPerTransacion = parseInt(amount, 10) / numOfTransactions;
+    return [amountPerTransacion, numOfTransactions]
   }
 
   render() {

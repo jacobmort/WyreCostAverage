@@ -13,13 +13,17 @@ class Explanation extends React.Component {
     const { continueClick, ...other } = this.props;
     let open = true;
     return (
-      <Dialog open={open}>
-        <DialogTitle id="form-dialog-title">Sign up With Wyre</DialogTitle>
+      <Dialog open={open}
+        fullWidth={true}
+        maxWidth={'md'}
+      >
+        <DialogTitle id="form-dialog-title"><h1>Wyre is our gateway to crypto</h1></DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <a href="https://www.sendwyre.com/">Wyre</a> is great for getting into/out of crypto. <br />
-            Let's get started.  Crypto isn't easy but this process is only 5 steps!
-            </DialogContentText>
+            <h5><a href="https://www.sendwyre.com/">Wyre</a> is great for getting into/out of crypto. <br />
+              Let's get started.  Crypto isn't easy but this process is only 5 steps!
+            </h5>
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={continueClick} color="primary">

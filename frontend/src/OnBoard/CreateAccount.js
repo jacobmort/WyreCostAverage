@@ -36,10 +36,12 @@ class CreateAccount extends React.Component {
     return (
       <Dialog
         open={open}
+        fullWidth={true}
+        maxWidth={'md'}
         onClose={this.handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">1. Let's Create a Wyre Account</DialogTitle>
+        <DialogTitle id="form-dialog-title"><h1>1. Let's Create a Wyre Account</h1></DialogTitle>
         <DialogContent>
           <Grid container spacing={24}>
             <TextField
@@ -73,9 +75,8 @@ class CreateAccount extends React.Component {
               onChange={this.handleChange('cellphone')}
             />
             <TextField
-              margin="dense"
               id="email"
-              label="Email Address"
+              label="Email"
               type="email"
               onChange={this.handleChange('email')}
               fullWidth

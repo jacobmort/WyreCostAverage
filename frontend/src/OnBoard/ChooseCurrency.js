@@ -18,12 +18,13 @@ import './OnBoard.css';
 
 class ChooseCurrency extends React.Component {
   state = {
-    chosenCurrency: null,
+    chosenCurrency: "ETH",
     balanceEth: 0,
     balanceBtc: 0,
     num: 0,
     autoDeposit: false,
-    side: 'buy'
+    side: 'buy',
+    endDate: new Date()
   }
 
   changeCurrency = (evt) => {
@@ -58,6 +59,12 @@ class ChooseCurrency extends React.Component {
     })
   }
 
+  changeDate = (evt) => {
+    this.setState({
+      endDate: evt.target.value
+    })
+  }
+
   showTheAdditionalOptions() {
     if (this.state.side === 'buy') {
       return <FormControlLabel
@@ -78,13 +85,15 @@ class ChooseCurrency extends React.Component {
     const { transferClick, ...other } = this.props;
     let open = true;
     return (
-      <Dialog open={open}>
-        <DialogTitle id="form-dialog-title">4. Setup DCA</DialogTitle>
+      <Dialog open={open}
+        fullWidth
+      >
+        <DialogTitle id="form-dialog-title"><h1>4. Setup DCA</h1></DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <div>Finally!  Now let's get down to business. Here you will choose what asset you want to buy or sell, the amount, and the date you want it done by</div>
-            <div>We'll automatically complete buy/sells on your behalf on Wyre evenly distributed over the time period you give us.</div>
-            <div>If you're making a buy and don't have enough USD we can automatically deposit more each time.</div>
+            <span>Finally!  Now let's get down to business. Here you will choose what asset you want to buy or sell, the amount, and the date you want it done by</span>
+            <span>We'll automatically complete buy/sells on your behalf on Wyre evenly distributed over the time period you give us.</span>
+            <span>If you're making a buy and don't have enough USD we can automatically deposit more each time.</span>
             <br />
             <br />
           </DialogContentText>
@@ -115,6 +124,8 @@ class ChooseCurrency extends React.Component {
           </DialogContentText>
           <Input
             type="date"
+            value={this.state.endDate}
+            onChange={this.changeDate}
             label="When do you want it done by?"
           />
           <RadioGroup
